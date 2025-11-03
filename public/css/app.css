@@ -1,0 +1,161 @@
+:root{
+    --pl-bg-2: #2b0e4a; /* deep purple */
+    --pl-primary: #3b1f6b; /* primary purple */
+    --pl-accent: #7b2cbf; /* accent */
+    --pl-text: hsl(240, 26%, 36%); /* light text */
+    --pl-muted: rgba(151, 168, 91, 0.7);
+    --card-bg: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    --radius: 10px;
+}
+
+/* Base styles - Premier League inspired */
+html,body{
+    height:100%;
+    overflow-x: hidden;
+}
+body {
+    margin: 0;
+    font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+    background: radial-gradient(circle at 10% 10%, rgba(123,44,191,0.08), transparent 15%), linear-gradient(180deg, var(--pl-bg-2));
+    color: var(--pl-muted) !important;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+}
+
+/* Global container tweaks */
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1.25rem;
+}
+
+/* Navbar styling */
+.navbar {
+    background: linear-gradient(90deg, rgba(59,31,107,0.95), rgba(123,44,191,0.95));
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.navbar .navbar-brand {
+    color: #fff !important;
+    font-weight:700;
+    letter-spacing:0.6px;
+}
+.navbar .nav-link, .navbar .navbar-text {
+    color: var(--pl-muted) !important;
+}
+.navbar .nav-link:hover {
+    color: #fff !important;
+}
+
+/* Hero area (optional background image). Put `premierleague.webp` in /public/images/ */
+.hero {
+    background-image: url('/images/premierleague.webp');
+    background-size: cover;
+    background-position: center center;
+    padding: 3.5rem 1rem;
+    border-radius: var(--radius);
+    margin-bottom: 1.25rem;
+    box-shadow: 0 6px 30px rgba(11,8,26,0.6);
+}
+.hero h1{ margin:0; color: #fff; font-size:2.2rem; }
+.hero p{ color: var(--pl-muted); margin-top:0.5rem }
+
+/* Club cards list */
+.club-list { display:flex; flex-wrap:wrap; gap:1rem; }
+.club-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.03);
+    border-radius: 12px;
+    /* let the Bootstrap column control the width so the card fills the column */
+    width: 100%;
+    padding: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0.6rem;
+    transition: transform .18s ease, box-shadow .18s ease;
+    min-height: 140px;
+    margin-top: 10px;
+    box-sizing: border-box;
+}
+.club-card:hover{ transform: translateY(-4px); box-shadow: 0 10px 30px rgba(11,8,26,0.6); }
+.club-thumb{
+    width:64px;
+    height:64px;
+    border-radius:8px;
+    overflow:hidden;
+    flex: 0 0 64px;
+    background:#111;
+}
+.club-thumb img{ width:100%; height:100%; object-fit:cover; display:block }
+.club-meta{ flex:1; min-width:0 }
+.club-name{ font-weight:700; color: #fff; margin:0; font-size:1.05rem }
+.club-sub{ color:var(--pl-muted); font-size:0.9rem }
+
+/* Push the action area (buttons/forms) to the bottom so cards look consistent */
+.club-card > div:last-child{
+    margin-top: auto;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+/* Single club show page compact header */
+.club-header{ display:flex; align-items:center; gap:0.9rem; padding:0.6rem 0 }
+.club-header .thumb-lg{ width:96px; height:96px; border-radius:8px; overflow:hidden }
+.club-header h1{ margin:0; font-size:1.6rem }
+
+/* Form and inputs */
+label{ color:var(--pl-muted); font-weight:600 }
+input.form-control, textarea.form-control, select.form-control{
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.04);
+    color: var(--pl-text);
+    border-radius:6px;
+    padding: .6rem .75rem;
+}
+input[type=file].form-control{ padding:.4rem }
+
+/* Buttons */
+.btn-primary{
+    background: linear-gradient(90deg,var(--pl-accent),var(--pl-primary));
+    border: none; color: #fff; font-weight:700; box-shadow: 0 6px 18px rgba(59,31,107,0.25);
+}
+.btn-info{
+    background: rgba(255,255,255,0.06); color:var(--pl-text); border:1px solid rgba(255,255,255,0.04);
+}
+.btn-danger{ background:#d9534f; border:none }
+
+/* Specific style for the "Add club" button used in clubs/index.blade.php */
+.btn-creer{
+    background: #ffffff !important; /* white background */
+    color: var(--pl-primary) !important; /* dark purple text for contrast */
+    border: 1px solid rgba(0,0,0,0.06);
+    padding: .45rem .75rem;
+    font-weight:700;
+    border-radius:6px;
+}
+
+/* Small utilities preserved from previous CSS for compatibility */
+.text-center { text-align: center; }
+.mt-2 { margin-top: 1rem; }
+.mb-2 { margin-bottom: 1rem; }
+.nav-link { margin-right: 5px; }
+
+/* Responsive */
+@media (max-width:980px){
+    .club-card{ width: calc(50% - .5rem) }
+}
+@media (max-width:600px){
+    .club-card{ width:100% }
+    .hero{ padding:2rem }
+}
+
+/* Preview image used on create form (if present) */
+#imagePreview{ display:block; max-width:220px; border-radius:8px; margin-top:.5rem }
+
+/* Footer kept simple */
+footer{ background:transparent; color:var(--pl-muted); padding:1rem; text-align:center }
+
+/* small tweaks for tables and lists */
+table { color:var(--pl-text) }
+
