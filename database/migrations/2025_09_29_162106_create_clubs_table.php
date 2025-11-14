@@ -21,11 +21,11 @@ class CreateClubsTable extends Migration
             $table->integer('matches_won');
             $table->integer('matches_lost');
             $table->integer('matches_drawn');
-            $table->foreignId('user_id')
+           /*  $table->foreignId('user_id')
                 ->references('id')
                 ->on('users')
                 ->onUpdate('restrict')
-                ->onDelete('restrict');
+                ->onDelete('restrict'); */
             $table->timestamps();
         });
     }
