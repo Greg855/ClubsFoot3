@@ -33,6 +33,10 @@ Route::get('/apropos', function () {
     return view('apropos');
 });
 
+Route::get('{any}', function () {
+    return view('monopage');
+})->where('any', '.*');
+
 Route::get('lang/{locale}', [LocalizationController::class, 'index']);
 
 Auth::routes();

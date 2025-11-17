@@ -102,7 +102,7 @@ class RegisterController extends Controller
 
     /**
 
-     * Register api
+     * Logout api
 
      *
 
@@ -110,47 +110,28 @@ class RegisterController extends Controller
 
      */
 
-     public function register(Request $request)
+    public function logout(Request $request)
 
      {
+        
  
-         $validator = Validator::make($request->all(), [
+         if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){ 
  
-             'name' => 'required',
+             $user = Auth::logout(); 
  
-             'email' => 'required|email',
+             $success['token'] =  $user->createToken('MyApp')->plainTextToken; 
  
-             'password' => 'required',
+             $success['name'] =  $user->name;
  
-             'c_password' => 'required|same:password',
+             return response()->json([$success, "message"=> 'User logged out successfully.']);
  
-         ]);
+         } 
  
-    
+         else{ 
  
-         if($validator->fails()){
+             return $this->sendError('Unauthorised.', ['error'=>'Unauthorised']);
  
-             return $this->sendError('Validation Error.', $validator->errors());       
- 
-         }
- 
-    
- 
-         $input = $request->all();
- 
-         $input['password'] = bcrypt($input['password']);
- 
-         $user = User::create($input);
- 
-         $success['token'] =  $user->createToken('MyApp')->plainTextToken;
- 
-         $success['name'] =  $user->name;
- 
-    
- 
-         return response()->json([$success, "message"=> 'User logged out successfully.']);
-
- 
+         } 
      }
  
 }

@@ -1,4 +1,20 @@
+import { createApp } from 'vue';
+
+require('./bootstrap');
+import App from './App.vue';
+import axios from 'axios';
+import router from './router';
+
+const app = createApp(App);
+app.config.globalProperties.$axios = axios;
+app.use(router);
+app.mount('#app');
+
 window._ = require('lodash');
+
+try {
+    require('bootstrap');
+} catch (e) {}
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
