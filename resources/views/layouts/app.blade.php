@@ -111,7 +111,6 @@
             @yield('content')
         </main>
     </div>
-    <script src="{{ asset('vendor/jquery-ui/jquery-ui.js') }}"></script>
     @yield('scripts')
 </body>
 
