@@ -35,33 +35,26 @@ class RegisterController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-
             'name' => 'required',
-
             'email' => 'required|email',
-
             'password' => 'required',
-
             'c_password' => 'required|same:password',
-
         ]);
 
 
-        if($validator->fails()){
-
-            return $this->sendError('Validation Error.', $validator->errors());       
-
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation Error.',
+                'errors' => $validator->errors()
+            ], 422);
         }
-
 
         $input = $request->all();
 
         $input['password'] = bcrypt($input['password']);
-
         $user = User::create($input);
-
         $success['token'] =  $user->createToken('MyApp')->plainTextToken;
-
         $success['name'] =  $user->name;
 
 
@@ -90,7 +83,6 @@ class RegisterController extends Controller
             $user = Auth::user(); 
 
             $success['token'] =  $user->createToken('MyApp')->plainTextToken; 
-
             $success['name'] =  $user->name;
 
             return response()->json([$success, "message"=> 'User login successfully.']);

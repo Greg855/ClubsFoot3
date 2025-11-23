@@ -6,14 +6,11 @@ export default function ShowClub({ clubId: propClubId }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Determine club id: prefer prop, otherwise parse from URL (/clubs/:id)
     function getIdFromPath() {
         if (propClubId) return propClubId;
         const parts = window.location.pathname.split('/').filter(Boolean);
-        // find the segment 'clubs' then the next segment is id
         const idx = parts.indexOf('clubs');
         if (idx !== -1 && parts.length > idx + 1) return parts[idx + 1];
-        // fallback: last segment
         return parts.length ? parts[parts.length - 1] : null;
     }
 

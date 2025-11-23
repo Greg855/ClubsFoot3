@@ -17,7 +17,18 @@ class ClubController extends Controller
      */
     public function index()
     {
-        return response()->json(Club::all(), 200);
+        $clubs = Club::latest()->paginate(5);
+        return view('clubs.index', compact('clubs'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return view('clubs.create');
     }
 
     /**
@@ -69,12 +80,21 @@ class ClubController extends Controller
      */
     public function show($id)
     {
-        $club = Club::with('joueurs')->find($id);
-        if (!$club) {
-            return response()->json(['error' => 'Not found'], 404);
-        }
+         $club = Club::findOrFail($id);
+        return view('clubs.show', compact('club'));
+    }
 
-        return response()->json($club, 200);
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        $club = Club::findOrFail($id);
+
+        return view('clubs.edit', compact('club'));
     }
 
     /**
@@ -131,16 +151,8 @@ class ClubController extends Controller
      */
     public function destroy($id)
     {
-        $club = Club::find($id);
-        if (!$club) {
-            return response()->json(['error' => 'Not found'], 404);
-        }
-
-        if ($club->user_id != Auth::id() && (!Auth::check() || Auth::user()->role != 'admin')) {
-            return response()->json(['error' => 'Forbidden'], 403);
-        }
-
+        $club = Club::findOrFail($id);
         $club->delete();
-        return response()->json(['message' => 'Club deleted'], 200);
+        return redirect('admin/clubs')->with('success', 'Club supprimé avec succès');
     }
 }

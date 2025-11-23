@@ -15,8 +15,8 @@ use App\Http\Controllers\Api\RegisterController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::post('register', [RegisterController::class, 'register']);
 Route::post('login', [RegisterController::class, 'login']);
+Route::post('register', [RegisterController::class, 'register']);
 Route::post('logout', [RegisterController::class, 'logout']);
 Route ::apiResource('/clubs' ,ClubController ::class);
 
