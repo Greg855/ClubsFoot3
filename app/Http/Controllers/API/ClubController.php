@@ -17,18 +17,9 @@ class ClubController extends Controller
      */
     public function index()
     {
-        $clubs = Club::latest()->paginate(5);
-        return view('clubs.index', compact('clubs'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        return view('clubs.create');
+        $clubs = Club::all();
+        // $clubs = Club:: paginate(5);
+        return response()->json($clubs, 200);
     }
 
     /**
@@ -39,26 +30,15 @@ class ClubController extends Controller
      */
     public function store(Request $request)
     {
-        if (!Auth::check()) {
-            return response()->json(['error' => 'Unauthenticated'], 401);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'city' => 'required|string',
-            'matches_played' => 'required|integer',
-            'matches_won' => 'required|integer',
-            'matches_lost' => 'required|integer',
-            'matches_drawn' => 'required|integer',
-            'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
+        $request->validate([
+            'name' => 'required',
+            'city' => 'required',
+            'matches_played' => 'required',
+            'matches_won' => 'required',
+            'matches_lost' => 'required',
+            'matches_drawn' => 'required',
+            'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $data = $request->only(['name','city','matches_played','matches_won','matches_lost','matches_drawn']);
-        $data['user_id'] = Auth::id();
 
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             $image = $request->file('image');
@@ -67,9 +47,17 @@ class ClubController extends Controller
             $data['image'] = $path;
         }
 
-        $club = Club::create($data);
+        $club =  Club::create([
+            'name' => $request->input('name'),
+            'city' => $request->input('city'),
+            'matches_played' => $request->input('matches_played'),
+            'matches_won' => $request->input('matches_won'),
+            'matches_lost' => $request->input('matches_lost'),
+            'matches_drawn' => $request->input('matches_drawn'),
+            'image' => $fileName ?? null,
+        ]);
 
-        return response()->json(['message' => 'Club created', 'data' => $club], 201);
+        return response()->json([$club, 'message' => 'Club ajouté'], 201);
     }
 
     /**
@@ -80,8 +68,11 @@ class ClubController extends Controller
      */
     public function show($id)
     {
-         $club = Club::findOrFail($id);
-        return view('clubs.show', compact('club'));
+        $club = Club::find($id);
+        if (!$club) {
+            return response()->json(['message' => 'Club non trouvée'], 404);
+        }
+        return response()->json($club, 200);
     }
 
     /**
@@ -92,9 +83,8 @@ class ClubController extends Controller
      */
     public function edit($id)
     {
-        $club = Club::findOrFail($id);
-
-        return view('clubs.edit', compact('club'));
+        $club = Club::find($id);
+        return response()->json($club);
     }
 
     /**
@@ -106,15 +96,10 @@ class ClubController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $club = Club::find($id);
+        $club = Club::findOrFail($id);
         if (!$club) {
-            return response()->json(['error' => 'Not found'], 404);
+            return response()->json(['message' => 'Not found'], 404);
         }
-
-        if ($club->user_id != Auth::id() && (!Auth::check() || Auth::user()->role != 'admin')) {
-            return response()->json(['error' => 'Forbidden'], 403);
-        }
-
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|required|string',
             'city' => 'sometimes|required|string',
@@ -124,12 +109,9 @@ class ClubController extends Controller
             'matches_drawn' => 'sometimes|required|integer',
             'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
         ]);
-
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json(['message' => false, 'message' => $validator->errors()], 422);
         }
-
-        $data = $request->only(['name','city','matches_played','matches_won','matches_lost','matches_drawn']);
 
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             $image = $request->file('image');
@@ -137,8 +119,7 @@ class ClubController extends Controller
             $path = $image->storeAs('images', $fileName, 'public');
             $data['image'] = $path;
         }
-
-        $club->update($data);
+        $club->update($request->except('image'));
 
         return response()->json(['message' => 'Club updated', 'data' => $club], 200);
     }
@@ -153,6 +134,15 @@ class ClubController extends Controller
     {
         $club = Club::findOrFail($id);
         $club->delete();
-        return redirect('admin/clubs')->with('success', 'Club supprimé avec succès');
+        return response()->json(null, 204);
+    }
+
+    public function autocomplete(Request $request)
+    {
+        $query = $request->input('query');
+        // Rechercher les correspondances
+        $clubs = Club::where('name', 'LIKE', "%{$query}%")->limit(10)->get();
+        //dd($articles);
+        return response()->json($clubs);
     }
 }

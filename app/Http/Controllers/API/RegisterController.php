@@ -32,36 +32,47 @@ class RegisterController extends Controller
 
     public function register(Request $request)
 
-    {
+     {
+ 
+         $validator = Validator::make($request->all(), [
+ 
+             'name' => 'required',
+ 
+             'email' => 'required|email',
+ 
+             'password' => 'required',
+ 
+             'c_password' => 'required|same:password',
+ 
+         ]);
+ 
+    
+ 
+         if($validator->fails()){
+ 
+             return $this->sendError('Validation Error.', $validator->errors());       
+ 
+         }
+ 
+    
+ 
+         $input = $request->all();
+ 
+         $input['password'] = bcrypt($input['password']);
+ 
+         $user = User::create($input);
+ 
+         $success['token'] =  $user->createToken('MyApp')->plainTextToken;
+ 
+         $success['name'] =  $user->name;
+        // $success['id'] =  $user->id;  la réponse lors de l'enregistrement peut aussi être l'id et le token
+ 
+    
+ 
+         return response()->json([$success, "message"=> 'User register successfully.']);
 
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'email' => 'required|email',
-            'password' => 'required',
-            'c_password' => 'required|same:password',
-        ]);
-
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation Error.',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $input = $request->all();
-
-        $input['password'] = bcrypt($input['password']);
-        $user = User::create($input);
-        $success['token'] =  $user->createToken('MyApp')->plainTextToken;
-        $success['name'] =  $user->name;
-
-
-        return response()->json([$success, "message"=> 'User register successfully.']);
-
-
-    }
+ 
+     }
 
 
     /**
@@ -75,27 +86,28 @@ class RegisterController extends Controller
      */
 
     public function login(Request $request)
-
-    {
-
-        if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){ 
-
-            $user = Auth::user(); 
-
-            $success['token'] =  $user->createToken('MyApp')->plainTextToken; 
-            $success['name'] =  $user->name;
-
-            return response()->json([$success, "message"=> 'User login successfully.']);
-
-        } 
-
-        else{ 
-
-            return $this->sendError('Unauthorised.', ['error'=>'Unauthorised']);
-
-        } 
-
-    }
+ 
+     {
+ 
+         if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){ 
+ 
+             $user = Auth::user(); 
+ 
+             $success['token'] =  $user->createToken('MyApp')->plainTextToken; 
+ 
+             $success['name'] =  $user->name;
+ 
+             return response()->json([$success, "message"=> 'User login successfully.']);
+ 
+         } 
+ 
+         else{ 
+ 
+             return $this->sendError('Unauthorised.', ['error'=>'Unauthorised']);
+ 
+         } 
+ 
+     }
 
 
     /**

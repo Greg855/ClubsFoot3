@@ -42,39 +42,26 @@ export default function Index() {
 
     return (
         <div className="container">
-            <div className="d-flex justify-content-between align-items-center mb-3">
-                <h1>Clubs</h1>
-                <a className="btn btn-primary" href="/clubs/create">Ajouter un club</a>
+            <div className="mb-4">
+                <div className="d-flex justify-content-between align-items-center">
+                    <h2 className="display-6">List of clubs</h2>
+                    <a className="btn btn-primary" href="/clubs/create">Ajouter un club</a>
+                </div>
+                <p className="text-muted">Here are the Premier League teams!</p>
             </div>
 
             {clubs.length === 0 && (
                 <div>Aucun club trouvé.</div>
             )}
 
-            <div className="row">
+            <div className="club-list">
                 {clubs.map(club => (
-                    <div key={club.id} className="col-md-4 mb-4">
+                    <div key={club.id} className="club-card">
                         <div className="card h-100">
-                            {club.image && (
-                                <img
-                                    src={club.image.startsWith('http') ? club.image : `/storage/${club.image}`}
-                                    className="card-img-top"
-                                    alt={club.name}
-                                    style={{ height: 160, objectFit: 'cover' }}
-                                />
-                            )}
-                            <div className="card-body d-flex flex-column">
-                                <h5 className="card-title">{club.name}</h5>
-                                <p className="card-text text-muted">{club.city}</p>
-                                <p className="mb-2">Matches: {club.matches_played} • W: {club.matches_won} • L: {club.matches_lost}</p>
-                                <div className="mt-auto d-flex">
-                                    <a href={`/clubs/${club.id}`} className="btn btn-sm btn-outline-primary me-2">Voir</a>
-                                    {club.can_edit && (
-                                        <>
-                                            <a href={`/clubs/${club.id}/edit`} className="btn btn-sm btn-info me-2">Modifier</a>
-                                            <button className="btn btn-sm btn-danger" onClick={() => handleDelete(club.id)}>Supprimer</button>
-                                        </>
-                                    )}
+                            <div className="card-body d-flex">
+                                <div className="club-meta">
+                                    <h5 className="club-name"><a href={`/clubs/${club.id}`}>{club.name}</a></h5>
+                                    <p className="text-muted mb-0">{club.city}</p>
                                 </div>
                             </div>
                         </div>

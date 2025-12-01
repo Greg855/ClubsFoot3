@@ -13,7 +13,10 @@ export default function Clubs() {
                 setLoading(true);
                 const res = await axios.get('/api/clubs');
                 if (!mounted) return;
-                setClubs(res.data || []);
+                // API may return an array or an object (e.g. { data: [...] }) depending on controller.
+                const payload = res.data;
+                const list = Array.isArray(payload) ? payload : (payload?.data || []);
+                setClubs(list);
             } catch (err) {
                 console.error(err);
                 setError(err.response?.data?.error || 'Échec du chargement des clubs');
