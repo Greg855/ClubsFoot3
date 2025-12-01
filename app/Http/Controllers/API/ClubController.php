@@ -63,7 +63,7 @@ class ClubController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Club  $club
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -91,15 +91,17 @@ class ClubController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\Club  $club
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $club = Club::findOrFail($id);
+        $club = Club::find($id);
         if (!$club) {
-            return response()->json(['message' => 'Not found'], 404);
+            return response()->json(['message' => 'Id not found'], 404);
         }
+
+        // Allow partial updates; fields are validated only when present
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|required|string',
             'city' => 'sometimes|required|string',
@@ -107,30 +109,35 @@ class ClubController extends Controller
             'matches_won' => 'sometimes|required|integer',
             'matches_lost' => 'sometimes|required|integer',
             'matches_drawn' => 'sometimes|required|integer',
-            'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
+            'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg',
         ]);
+
         if ($validator->fails()) {
-            return response()->json(['message' => false, 'message' => $validator->errors()], 422);
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
+        $data = $request->except('image');
+
+        // Handle uploaded image properly and store path
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             $image = $request->file('image');
-            $fileName = time() . '_' . preg_replace('/[^A-Za-z0-9.\-\_\.]/', '_', $image->getClientOriginalName());
+            $fileName = time() . '_' . preg_replace('/[^A-Za-z0-9.\-\_\.]*/', '_', $image->getClientOriginalName());
             $path = $image->storeAs('images', $fileName, 'public');
             $data['image'] = $path;
         }
-        $club->update($request->except('image'));
 
-        return response()->json(['message' => 'Club updated', 'data' => $club], 200);
+        $club->update($data);
+
+        return response()->json(['success' => true, 'data' => $club->fresh(), 'message' => 'Club modifié avec succès'], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Models\Club  $club
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(string $id)
     {
         $club = Club::findOrFail($id);
         $club->delete();
