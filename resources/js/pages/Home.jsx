@@ -74,17 +74,26 @@ export default function Home() {
                 <div className="club-list">
                     {clubs.map((club) => (
                         <div key={club.id} className="club-card">
-                            <div className="card h-100">
-                                <div className="card-body d-flex">
-                                    <div className="club-meta">
-                                        <Link to={`/clubs/${club.id}`}>
-                                            <h5 className="club-name">
-                                                {club.name}
-                                            </h5>
-                                        </Link>
-                                        <p className="text-muted mb-0">
-                                            {club.city}
-                                        </p>
+                            <div className="card h-100 shadow-sm">
+                                <div className="card-body p-3">
+                                    <div className="d-flex align-items-center">
+                                        {club.image && (
+                                            <div className="me-3 d-none d-md-block">
+                                                <img src={club.image.startsWith('http') ? club.image : `/storage/${club.image}`} alt={club.name} style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 6 }} />
+                                            </div>
+                                        )}
+
+                                        <div className="club-meta">
+                                            <Link to={`/clubs/${club.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                                <h4 className="club-name mb-1 fw-bold" style={{ fontSize: '1.15rem' }}>{club.name}</h4>
+                                            </Link>
+                                            <p className="text-muted mb-0 small">{club.city}</p>
+                                        </div>
+
+                                        <div className="ms-auto d-flex align-items-center">
+                                            <Link to={`/clubs/${club.id}/edit`} className="btn btn-sm btn-outline-secondary me-2">Éditer</Link>
+                                            <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(club.id)}>Supprimer</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

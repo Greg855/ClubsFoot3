@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 export default function Clubs() {
     const [clubs, setClubs] = useState([]);
@@ -48,13 +49,45 @@ export default function Clubs() {
                                         </div>
                                     )}
                                     <div className="col">
-                                        <div className="card-body">
-                                            <h5 className="card-title">{club.name}</h5>
-                                            <p className="card-text mb-1"><small className="text-muted">{club.city}</small></p>
-                                            <p className="card-text">
-                                                <small>Joueurs: {club.joueurs ? club.joueurs.length : 0} • Matches: {club.matches_played ?? 0}</small>
-                                            </p>
-                                            <Link to={`/clubs/${club.id}`} className="btn btn-primary">Voir</Link>
+                                        <div className="card-body p-3">
+                                            <div className="d-flex align-items-center">
+                                                {club.image && (
+                                                    <div className="me-3 d-none d-md-block">
+                                                        <img src={club.image.startsWith('http') ? club.image : `/storage/${club.image}`} alt={club.name} style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 6 }} />
+                                                    </div>
+                                                )}
+
+                                                <div>
+                                                    <h4 className="card-title mb-1 fw-bold" style={{ fontSize: '1.15rem' }}>{club.name}</h4>
+                                                    <p className="card-text mb-1"><small className="text-muted">{club.city}</small></p>
+                                                    <p className="card-text mb-2"><small>Joueurs: {club.joueurs ? club.joueurs.length : 0} • Matches: {club.matches_played ?? 0}</small></p>
+                                                </div>
+
+                                                <div className="ms-auto d-flex align-items-center">
+                                                    <Link to={`/clubs/${club.id}/edit`} className="btn btn-sm btn-outline-secondary me-2">Éditer</Link>
+                                                    <button
+                                                        className="btn btn-sm btn-outline-danger"
+                                                        onClick={async () => {
+                                                            if (!window.confirm(`Supprimer le club "${club.name}" ?`)) return;
+                                                            try {
+                                                                const token = localStorage.getItem('token');
+                                                                await axios.delete(`/api/clubs/${club.id}`, {
+                                                                    headers: token ? { Authorization: `Bearer ${token}` } : {}
+                                                                });
+                                                                setClubs(prev => prev.filter(c => c.id !== club.id));
+                                                            } catch (err) {
+                                                                console.error(err);
+                                                                alert('Échec de la suppression');
+                                                            }
+                                                        }}
+                                                    >
+                                                        Supprimer
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div className="mt-2">
+                                                <Link to={`/clubs/${club.id}`} className="btn btn-primary btn-sm">Voir</Link>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
