@@ -10,6 +10,7 @@ import Clubs from '../pages/clubs/Clubs.jsx';
 import AddClub from '../components/AddClub.jsx';
 import EditClub from '../components/EditClub.jsx';
 import ShowClub from '../components/Clubs.jsx';
+import "../i18n";
 
 export const routes = [
     {

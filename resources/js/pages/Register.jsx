@@ -1,14 +1,27 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 export default function Register() {
     const [form, setForm] = useState({ name: '', email: '', password: '', c_password: '' });
     const [errors, setErrors] = useState(null);
     const [submitting, setSubmitting] = useState(false);
+    const [captchaValue, setCaptchaValue] = useState(null);
+
+    const handleCaptchaChange = (value) => {
+        setCaptchaValue(value);
+    };
 
     function handleChange(e) {
         const { name, value } = e.target;
-        setForm(prev => ({ ...prev, [name]: value }));
+        if (captchaValue) {
+            // Send captchaValue to your backend for verification
+            console.log("reCAPTCHA token:", captchaValue);
+            // Proceed with form submission
+        } else {
+            alert("Please complete the reCAPTCHA.");
+        }
+        setForm((prev) => ({ ...prev, [name]: value }));
     }
 
     async function handleSubmit(e) {
@@ -39,6 +52,7 @@ export default function Register() {
 
     return (
         <div className="container py-4">
+             <script src="https://www.google.com/recaptcha/api.js?render=explicit" async defer></script>
             <h1>Register</h1>
 
             {errors && (
@@ -65,7 +79,12 @@ export default function Register() {
                     <input name="c_password" value={form.c_password} onChange={handleChange} className="form-control" type="password" required />
                 </div>
 
-                <button className="btn btn-primary" type="submit" disabled={submitting}>{submitting ? 'Registering...' : 'Register'}</button>
+                <ReCAPTCHA
+                    sitekey={process.env.MIX_RECAPTCHA_SITE_KEY}
+                    onChange={handleCaptchaChange}
+                />
+                
+                <button className="btn btn-primary" type="submit" disabled={submitting && !captchaValue}>{submitting ? 'Registering...' : 'Register'}</button>
             </form>
         </div>
     );

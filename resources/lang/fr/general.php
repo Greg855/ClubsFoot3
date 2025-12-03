@@ -1,6 +1,7 @@
 <?php
 // FR folder
 return [
+    'PremierLeague' => 'Premier League',
     'Voici equipes' => 'Voici les équipes de la Premier League❗',
     'Apropos' => 'À propos',
     'ListeClub' => 'Liste des clubs',

@@ -6,6 +6,8 @@ import About from "./pages/About";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Layout from "./components/Layout";
+import "../css/app.css";
+import "./i18n";
 
 const App = () => {
     return (

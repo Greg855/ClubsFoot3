@@ -29,7 +29,6 @@
 @endif
 
 <div class="container">
-
     <div class="row">
         @foreach ($clubs as $index => $club)
         <div class="col-md-4">

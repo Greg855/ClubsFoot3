@@ -23,6 +23,7 @@
     @endif
     <script>
         window.laravel = JSON.parse(atob('{{ base64_encode(json_encode($user_auth_data)) }}'));
+        window.laravel.locale = '{{ session("locale", "en") }}';
     </script>
 
     <script src="{{ mix('js/app.js') }}" type="text/javascript"></script>
