@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { Link, useNavigate } from "react-router-dom";
 import i18n from "../i18n";
+import axios from "axios";
+import { AuthContext } from "../AuthContext";
 
 export default function Navbar() {
     const { t } = useTranslation();
-    const isLoggedIn = window?.laravel?.isLoggedIn ?? false;
+    const authContext = React.useContext(AuthContext);
+    const navigate = useNavigate();
     const [current, setCurrent] = useState(i18n.language || "en");
-    console.log(t("AucunResultat"));
+
     useEffect(() => {
         const handleChange = (lng) => setCurrent(lng);
         i18n.on("languageChanged", handleChange);
@@ -26,6 +30,25 @@ export default function Navbar() {
             }
         } catch (error) {
             console.error("Failed to change language:", error);
+        }
+    };
+
+    const handleLogout = async (e) => {
+        e.preventDefault();
+        try {
+            const token = localStorage.getItem("token");
+            await axios.post(
+                "/api/logout",
+                {},
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+        } catch (error) {
+            console.error("Logout failed:", error);
+        } finally {
+            authContext.logout();
+            navigate("/");
         }
     };
 
@@ -60,7 +83,7 @@ export default function Navbar() {
                         {t("Rechercher")}
                     </button>
                 </div>
-                {/* LANGUE */}{" "}
+                {/* LANGUE */}
                 <div className="navbar-nav ms-auto">
                     <div className="nav-item dropdown">
                         <a
@@ -106,35 +129,33 @@ export default function Navbar() {
                         </ul>
                     </div>
 
-                    {!isLoggedIn ? (
+                    {!authContext.isLoggedIn ? (
                         <div className="nav-item">
-                            <a className="nav-link text-light" href="/login">
+                            <Link className="nav-link text-light" to="/login">
                                 {t("Connexion")}
-                            </a>
-                            <a className="nav-link text-light" href="/register">
+                            </Link>
+                            <Link
+                                className="nav-link text-light"
+                                to="/register"
+                            >
                                 {t("Inscription")}
-                            </a>
+                            </Link>
                         </div>
                     ) : (
                         <div className="nav-item">
                             <a
                                 className="nav-link text-light"
                                 href="#"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    document
-                                        .getElementById("logout-form")
-                                        ?.submit();
-                                }}
+                                onClick={handleLogout}
                             >
                                 {t("Deconnexion")}
                             </a>
                         </div>
                     )}
                     <div className="nav-item">
-                        <a className="nav-link text-light" href="/apropos">
+                        <Link className="nav-link text-light" to="/apropos">
                             {t("Apropos")}
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </div>

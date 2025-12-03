@@ -38,7 +38,7 @@ Auth::routes(['verify' => true]);
 
 Route::get('lang/{locale}', [LocalizationController::class, 'index']);
 
-Route::get('{any}', function () {
+Route::get('/{any}', function () {
     return view('monopage');
 })->where('any', '.*');
 
@@ -66,8 +66,4 @@ Route::prefix('/admin/clubs')->middleware(['admin'])->group(function () {
     Route::get('/{id}/edit', [ClubController::class, 'edit'])->name('clubs.edit');
     Route::patch('/{id}/update', [ClubController::class, 'update'])->name('clubs.update');
     Route::delete('/{id}', [ClubController::class, 'destroy'])->name('clubs.destroy');
-});
-
-Route::get('/translations/{lang}', function ($lang) {
-    return response()->json(require resource_path("lang/$lang/general.php"));
 });

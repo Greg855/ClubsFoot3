@@ -1,11 +1,16 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ReCAPTCHA from "react-google-recaptcha";
+import { AuthContext } from "../AuthContext";
 
 export default function Login() {
-    const [form, setForm] = useState({ email: "", password: "" });
+    const authContext = React.useContext(AuthContext);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [errors, setErrors] = useState(null);
     const [submitting, setSubmitting] = useState(false);
+    const navigate = useNavigate();
 
     const [captchaValue, setCaptchaValue] = useState(null);
 
@@ -13,37 +18,30 @@ export default function Login() {
         setCaptchaValue(value);
     };
 
-    function handleChange(e) {
-        const { name, value } = e.target;
-        if (captchaValue) {
-            // Send captchaValue to your backend for verification
-            console.log("reCAPTCHA token:", captchaValue);
-            // Proceed with form submission
-        } else {
-            alert("Please complete the reCAPTCHA.");
-        }
-        setForm((prev) => ({ ...prev, [name]: value }));
-    }
-
     async function handleSubmit(e) {
         e.preventDefault();
+        if (!captchaValue) {
+            alert("Please complete the reCAPTCHA.");
+            return;
+        }
         setSubmitting(true);
         setErrors(null);
+
         try {
-            const res = await axios.post("/api/login", form);
+            const res = await axios.post("/api/login", { email, password });
             const body = res.data;
-            // login controller may return token in body.token or in array first element
-            const token =
-                body.token ||
-                (Array.isArray(body) && (body[0]?.token || body["0"]?.token));
-            if (token) {
-                localStorage.setItem("token", token);
-                window.location.href = "/";
-                return;
+            const token = body[0]?.token || body.data?.[0]?.token;
+
+            if (body.message) {
+                localStorage.setItem("token",  token);
+                authContext.login(token);
+                console.log(token);
+                navigate("/");
             }
-            setErrors(body.errors || body.message || body);
+            setErrors(body.errors);
         } catch (err) {
             if (err.response && err.response.data) {
+                console.log("erreur 1");
                 setErrors(err.response.data.errors || err.response.data);
             } else {
                 setErrors({ message: "Network error" });
@@ -55,7 +53,6 @@ export default function Login() {
 
     return (
         <div className="container py-4">
-            <script src="https://www.google.com/recaptcha/api.js?render=explicit" async defer></script>
             <h1>Login</h1>
 
             {errors && (
@@ -71,8 +68,8 @@ export default function Login() {
                     <label className="form-label">Email</label>
                     <input
                         name="email"
-                        value={form.email}
-                        onChange={handleChange}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         className="form-control"
                         type="email"
                         required
@@ -82,8 +79,8 @@ export default function Login() {
                     <label className="form-label">Password</label>
                     <input
                         name="password"
-                        value={form.password}
-                        onChange={handleChange}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         className="form-control"
                         type="password"
                         required
@@ -94,9 +91,6 @@ export default function Login() {
                     sitekey={process.env.MIX_RECAPTCHA_SITE_KEY}
                     onChange={handleCaptchaChange}
                 />
-                <button type="submit" disabled={!captchaValue}>
-                    Submit
-                </button>
                 <button
                     className="btn btn-primary"
                     type="submit"

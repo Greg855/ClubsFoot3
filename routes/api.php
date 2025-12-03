@@ -17,10 +17,10 @@ use App\Http\Controllers\Api\RegisterController;
 */
 Route::post('login', [RegisterController::class, 'login']);
 Route::post('register', [RegisterController::class, 'register']);
-Route::post('logout', [RegisterController::class, 'logout']);
 Route ::apiResource('/clubs' ,ClubController ::class);
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::post('logout', [RegisterController::class, 'logout']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

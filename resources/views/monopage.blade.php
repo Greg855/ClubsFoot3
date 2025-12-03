@@ -4,23 +4,19 @@
 <head>
 
     <link href="{{ mix('css/app.css') }}" type="text/css" rel="stylesheet" />
+    <script
+        src="https://www.google.com/recaptcha/api.js?render=explicit"
+        async
+        defer></script>
 </head>
+
 <body>
 
-    @if (Auth::check())
-        @php
-            $user_auth_data = [
-                'isLoggedIn' => true,
-                'user' => Auth::user(),
-                ];
-        @endphp
-    @else
-        @php
-            $user_auth_data = [
-                'isLoggedIn' => false,
-            ];
-        @endphp
-    @endif
+    @php
+        $user_auth_data = Auth::check() 
+        ? [ 'isLoggedIn' => true, 'user' => Auth::user()] 
+        : [ 'isLoggedIn' => false ];
+    @endphp
     <script>
         window.laravel = JSON.parse(atob('{{ base64_encode(json_encode($user_auth_data)) }}'));
         window.laravel.locale = '{{ session("locale", "en") }}';
