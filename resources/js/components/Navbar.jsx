@@ -153,7 +153,7 @@ export default function Navbar() {
                         </div>
                     )}
                     <div className="nav-item">
-                        <Link className="nav-link text-light" to="/apropos">
+                        <Link className="nav-link text-light" to="/about">
                             {t("Apropos")}
                         </Link>
                     </div>

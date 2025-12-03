@@ -6,6 +6,10 @@ import About from "./pages/About";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Layout from "./components/Layout";
+import Clubs from "./components/Clubs";
+import AddClub from "./components/AddClub";
+import EditClub from "./components/EditClub";
+import ShowClub from "./components/ShowClub";
 import "../css/app.css";
 import "./i18n";
 import AuthContext from "./AuthContext";
@@ -44,7 +48,11 @@ const App = () => {
             <Layout>
                 <Routes>
                     <Route path="/" element={<Home />} />
-                    <Route path="/apropos" element={<About />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/clubs" element={<Clubs />} />
+                    <Route path="/clubs/create" element={<AddClub />} />
+                    <Route path="/clubs/:id/edit" element={<EditClub />} />
+                    <Route path="/clubs/:id" element={<ShowClub />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                 </Routes>

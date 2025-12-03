@@ -102,8 +102,12 @@ class RegisterController extends Controller
          } 
  
          else{ 
- 
-             return $this->sendError('Unauthorised.', ['error'=>'Unauthorised']);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorised',
+                'errors' => ['error' => 'Unauthorised']
+            ], 401);
  
          } 
  
@@ -127,7 +131,13 @@ class RegisterController extends Controller
 
         if ($user) {
             if (method_exists($user, 'currentAccessToken') && $user->currentAccessToken()) {
-                $user->currentAccessToken()->delete();
+                $token = $user->currentAccessToken();
+                if (is_object($token) && method_exists($token, 'delete')) {
+                    $token->delete();
+                } elseif (method_exists($user, 'tokens')) {
+                    // fallback for transient tokens
+                    $user->tokens()->delete();
+                }
             } elseif (method_exists($user, 'tokens')) {
                 $user->tokens()->delete();
             }
@@ -135,7 +145,11 @@ class RegisterController extends Controller
             return response()->json(["message" => 'User logged out successfully.']);
         }
 
-        return $this->sendError('Unauthorised.', ['error'=>'Unauthorised']);
+        return response()->json([
+            'success' => false,
+            'message' => 'Unauthorised',
+            'errors' => ['error' => 'Unauthorised']
+        ], 401);
     }
 
 }
