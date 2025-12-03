@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
 import ReCAPTCHA from "react-google-recaptcha";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
+    const navigate = useNavigate("/");
     const [form, setForm] = useState({
         name: "",
         email: "",
@@ -40,7 +42,7 @@ export default function Register() {
                         (body[0]?.token || body["0"]?.token));
                 if (token) {
                     localStorage.setItem("token", token);
-                    window.location.href = "/";
+                    navigate("/");
                     return;
                 }
                 setErrors(body.errors || body.message || body);

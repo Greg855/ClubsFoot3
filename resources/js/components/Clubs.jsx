@@ -54,7 +54,7 @@ export default function Clubs() {
                                             <p className="card-text">
                                                 <small>Joueurs: {club.joueurs ? club.joueurs.length : 0} • Matches: {club.matches_played ?? 0}</small>
                                             </p>
-                                            <a href={`/clubs/${club.id}`} className="btn btn-primary">Voir</a>
+                                            <Link to={`/clubs/${club.id}`} className="btn btn-primary">Voir</Link>
                                         </div>
                                     </div>
                                 </div>

@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate, Link } from "react-router-dom";
 
 export default function EditClub({ clubId: propClubId }) {
+    const navigate = useNavigate();
     const [form, setForm] = useState({
         name: '',
         city: '',
@@ -107,7 +109,7 @@ export default function EditClub({ clubId: propClubId }) {
             });
 
             // Redirect to the club page
-            window.location.href = `/clubs/${id}`;
+            navigate(`/clubs/${id}`);
         } catch (err) {
             if (err.response && err.response.data) {
                 setErrors(err.response.data.errors || err.response.data);
@@ -179,7 +181,7 @@ export default function EditClub({ clubId: propClubId }) {
                 <button className="btn btn-primary" type="submit" disabled={submitting}>
                     {submitting ? 'Envoi...' : 'Sauvegarder'}
                 </button>
-                <a href={`/clubs/${id}`} className="btn btn-secondary ms-2">Annuler</a>
+                <Link to={`/clubs/${id}`} className="btn btn-secondary ms-2">Annuler</Link>
             </form>
         </div>
     );

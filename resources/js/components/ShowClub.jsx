@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function ShowClub({ clubId: propClubId }) {
+    const navigate = useNavigate();
     const [club, setClub] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     function getIdFromPath() {
         if (propClubId) return propClubId;
-        const parts = window.location.pathname.split('/').filter(Boolean);
-        const idx = parts.indexOf('clubs');
+        const parts = window.location.pathname.split("/").filter(Boolean);
+        const idx = parts.indexOf("clubs");
         if (idx !== -1 && parts.length > idx + 1) return parts[idx + 1];
         return parts.length ? parts[parts.length - 1] : null;
     }
@@ -18,7 +20,7 @@ export default function ShowClub({ clubId: propClubId }) {
 
     useEffect(() => {
         if (!id) {
-            setError('Club id non trouvé dans l\'URL');
+            setError("Club id non trouvé dans l'URL");
             setLoading(false);
             return;
         }
@@ -33,7 +35,9 @@ export default function ShowClub({ clubId: propClubId }) {
                 setClub(res.data);
             } catch (err) {
                 console.error(err);
-                setError(err.response?.data?.error || 'Échec du chargement du club');
+                setError(
+                    err.response?.data?.error || "Échec du chargement du club"
+                );
             } finally {
                 setLoading(false);
             }
@@ -41,18 +45,20 @@ export default function ShowClub({ clubId: propClubId }) {
 
         fetchClub();
 
-        return () => { mounted = false };
+        return () => {
+            mounted = false;
+        };
     }, [id, propClubId]);
 
     async function handleDelete() {
-        if (!confirm('Voulez-vous vraiment supprimer ce club ?')) return;
+        if (!confirm("Voulez-vous vraiment supprimer ce club ?")) return;
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem("token");
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
             await axios.delete(`/api/clubs/${id}`, { headers });
-            window.location.href = '/';
+            navigate("/");
         } catch (err) {
-            alert(err.response?.data?.error || 'Suppression échouée');
+            alert(err.response?.data?.error || "Suppression échouée");
         }
     }
 
@@ -64,11 +70,25 @@ export default function ShowClub({ clubId: propClubId }) {
         <div className="container">
             <div className="d-flex align-items-center mb-3">
                 {club.image && (
-                    <img src={club.image.startsWith('http') ? club.image : `/storage/${club.image}`} alt={club.name} className="rounded me-3" style={{ width: 96, height: 96, objectFit: 'cover' }} />
+                    <img
+                        src={
+                            club.image.startsWith("http")
+                                ? club.image
+                                : `/storage/${club.image}`
+                        }
+                        alt={club.name}
+                        className="rounded me-3"
+                        style={{ width: 96, height: 96, objectFit: "cover" }}
+                    />
                 )}
                 <div>
                     <h1 className="mb-0">{club.name}</h1>
-                    <small className="text-muted">Créé le: {club.created_at ? new Date(club.created_at).toLocaleString() : ''}</small>
+                    <small className="text-muted">
+                        Créé le:{" "}
+                        {club.created_at
+                            ? new Date(club.created_at).toLocaleString()
+                            : ""}
+                    </small>
                 </div>
             </div>
 
@@ -85,20 +105,37 @@ export default function ShowClub({ clubId: propClubId }) {
             <div className="buttons mb-3">
                 {club.can_edit && (
                     <>
-                        <a href={`/clubs/${id}/edit`} className="btn btn-info me-2">Modifier</a>
-                        <button className="btn btn-danger" onClick={handleDelete}>Supprimer</button>
+                        <Link
+                            to={`/clubs/${id}/edit`}
+                            className="btn btn-info me-2"
+                        >
+                            Modifier
+                        </Link>
+                        <button
+                            className="btn btn-danger"
+                            onClick={handleDelete}
+                        >
+                            Supprimer
+                        </button>
                     </>
                 )}
-                <a href="/" className="btn btn-secondary ms-2">Retour</a>
+                <Link to="/" className="btn btn-secondary ms-2">
+                    Retour
+                </Link>
             </div>
 
             <div>
                 <h2>Joueurs</h2>
                 {club.joueurs && club.joueurs.length ? (
-                    club.joueurs.map(j => (
+                    club.joueurs.map((j) => (
                         <div key={j.id} className="mb-2">
-                            <h5>{j.name} (#{j.id})</h5>
-                            <p><strong>Poste:</strong> {j.position} • <strong>Pays:</strong> {j.country}</p>
+                            <h5>
+                                {j.name} (#{j.id})
+                            </h5>
+                            <p>
+                                <strong>Poste:</strong> {j.position} •{" "}
+                                <strong>Pays:</strong> {j.country}
+                            </p>
                         </div>
                     ))
                 ) : (

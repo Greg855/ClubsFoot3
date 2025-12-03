@@ -61,7 +61,7 @@ export default function Navbar() {
     return (
         <nav className="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div className="container">
-                <a className="navbar-brand" href="/">
+                <Link className="navbar-brand" to="/">
                     <img
                         src="/images/premierleague.webp"
                         width="64"
@@ -70,7 +70,7 @@ export default function Navbar() {
                         style={{ marginRight: 12 }}
                     />
                     <span>{t("PremierLeague")}</span>
-                </a>
+                </Link>
                 <div className="form-group">
                     <input
                         type="text"

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate, Link } from "react-router-dom";
 
 export default function AddClub() {
+    const navigate = useNavigate();
     const [form, setForm] = useState({
         name: '',
         city: '',
@@ -57,7 +59,7 @@ export default function AddClub() {
                 }
             });
 
-            window.location.href = '/';
+            navigate("/");
         } catch (err) {
             if (err.response && err.response.data) {
                 setErrors(err.response.data.errors || err.response.data);
